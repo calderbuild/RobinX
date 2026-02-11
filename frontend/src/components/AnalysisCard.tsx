@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import type { Curve, Trade, Position } from '../lib/goldsky'
-import type { TokenAnalysis, RiskFlag } from '../lib/analysisSchema'
+import type { TokenAnalysis, RiskFlag, SuggestedAction } from '../lib/analysisSchema'
 import { analyzeToken } from '../lib/analyzer'
 import { calculateMetrics } from '../lib/metrics'
 import { fetchTokenMetadata } from '../lib/metadata'
@@ -20,6 +20,51 @@ function severityColor(severity: RiskFlag['severity']): string {
     case 'medium': return 'bg-yellow/20 text-yellow border-yellow/30'
     case 'low': return 'bg-bg-tertiary text-text-secondary border-border'
   }
+}
+
+function actionStyle(action: SuggestedAction['action']): { bg: string; text: string; label: string } {
+  switch (action) {
+    case 'buy': return { bg: 'bg-green/10 border-green/30', text: 'text-green', label: 'Consider buying' }
+    case 'hold': return { bg: 'bg-yellow/10 border-yellow/30', text: 'text-yellow', label: 'Research more' }
+    case 'avoid': return { bg: 'bg-red/10 border-red/30', text: 'text-red', label: 'Proceed with caution' }
+  }
+}
+
+function TradeSuggestion({ action }: { action: SuggestedAction }) {
+  const style = actionStyle(action.action)
+  return (
+    <div className={`mt-4 rounded-lg border ${style.bg} px-4 py-3`}>
+      <div className="flex items-center justify-between">
+        <span className={`text-sm font-semibold ${style.text}`}>{style.label}</span>
+        <span className="text-xs text-text-muted">{action.confidence}% confidence</span>
+      </div>
+      <p className="mt-1 text-xs text-text-secondary">{action.reasoning}</p>
+    </div>
+  )
+}
+
+function FallbackSuggestion({ score, hasCritical }: { score: number; hasCritical: boolean }) {
+  let action: SuggestedAction['action']
+  let reasoning: string
+
+  if (hasCritical || score < 35) {
+    action = 'avoid'
+    reasoning = 'Critical risk flags detected or very low overall score.'
+  } else if (score >= 65) {
+    action = 'buy'
+    reasoning = 'Above-average score with no critical risks.'
+  } else {
+    action = 'hold'
+    reasoning = 'Mixed signals -- do more research before committing.'
+  }
+
+  const style = actionStyle(action)
+  return (
+    <div className={`mt-4 rounded-lg border ${style.bg} px-4 py-3`}>
+      <span className={`text-sm font-semibold ${style.text}`}>{style.label}</span>
+      <p className="mt-1 text-xs text-text-secondary">{reasoning}</p>
+    </div>
+  )
 }
 
 function SubScore({ label, score, reasoning }: { label: string; score: number; reasoning: string }) {
@@ -163,6 +208,14 @@ export function AnalysisCard({ curve, trades, positions }: AnalysisCardProps) {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Trade Suggestion */}
+      {analysis.suggested_action && (
+        <TradeSuggestion action={analysis.suggested_action} />
+      )}
+      {!analysis.suggested_action && (
+        <FallbackSuggestion score={analysis.overall_score} hasCritical={analysis.risk_flags.some(f => f.severity === 'critical')} />
       )}
 
       {/* Re-analyze */}

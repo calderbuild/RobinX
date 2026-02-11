@@ -20,7 +20,12 @@ For risk flags, only include flags that are actually relevant. Severity levels:
 - medium: Worth noting (moderate concentration, creator sold some, low liquidity)
 - low: Minor observation (new token, few holders, low volume)
 
-Comparable projects should reference real projects that are similar in concept.`
+Comparable projects should reference real projects that are similar in concept.
+
+Also provide a suggested_action with:
+- action: "buy" (score >= 65, no critical flags), "hold" (mixed signals), or "avoid" (score < 35 or critical flags)
+- confidence: 0-100 how confident you are in this recommendation
+- reasoning: one sentence explaining the recommendation`
 
 function buildUserPrompt(
   name: string,
