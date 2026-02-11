@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import { ConnectButton } from './ConnectButton'
 
 const NAV_ITEMS = [
   { path: '/', label: 'Feed' },
@@ -23,23 +24,26 @@ export function Navbar() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-1">
-          {NAV_ITEMS.map(({ path, label }) => {
-            const active = pathname === path
-            return (
-              <Link
-                key={path}
-                to={path}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium no-underline transition-colors ${
-                  active
-                    ? 'bg-bg-tertiary text-text-primary'
-                    : 'text-text-secondary hover:bg-bg-hover hover:text-text-primary'
-                }`}
-              >
-                {label}
-              </Link>
-            )
-          })}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            {NAV_ITEMS.map(({ path, label }) => {
+              const active = pathname === path
+              return (
+                <Link
+                  key={path}
+                  to={path}
+                  className={`rounded-lg px-3 py-1.5 text-sm font-medium no-underline transition-colors ${
+                    active
+                      ? 'bg-bg-tertiary text-text-primary'
+                      : 'text-text-secondary hover:bg-bg-hover hover:text-text-primary'
+                  }`}
+                >
+                  {label}
+                </Link>
+              )
+            })}
+          </div>
+          <ConnectButton />
         </div>
       </div>
     </nav>
