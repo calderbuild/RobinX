@@ -1,12 +1,5 @@
-import { BrowserProvider, JsonRpcSigner } from 'ethers'
+import { BrowserProvider, formatEther, type JsonRpcSigner } from 'ethers'
 import { BASE_MAINNET } from './chains'
-
-export interface WalletState {
-  address: string | null
-  signer: JsonRpcSigner | null
-  chainId: number | null
-  balance: string | null
-}
 
 const STORAGE_KEY = 'robinlens:wallet-connected'
 
@@ -102,7 +95,6 @@ export async function getEthBalance(address: string): Promise<string> {
 
   const provider = new BrowserProvider(ethereum)
   const balance = await provider.getBalance(address)
-  const { formatEther } = await import('ethers')
   return formatEther(balance)
 }
 
@@ -110,14 +102,16 @@ export function onAccountsChanged(callback: (accounts: string[]) => void): () =>
   const ethereum = getEthereum()
   if (!ethereum) return () => {}
 
-  ethereum.on('accountsChanged', callback)
-  return () => ethereum.removeListener('accountsChanged', callback)
+  const handler = (...args: unknown[]) => callback(args[0] as string[])
+  ethereum.on('accountsChanged', handler)
+  return () => ethereum.removeListener('accountsChanged', handler)
 }
 
 export function onChainChanged(callback: (chainId: string) => void): () => void {
   const ethereum = getEthereum()
   if (!ethereum) return () => {}
 
-  ethereum.on('chainChanged', callback)
-  return () => ethereum.removeListener('chainChanged', callback)
+  const handler = (...args: unknown[]) => callback(args[0] as string)
+  ethereum.on('chainChanged', handler)
+  return () => ethereum.removeListener('chainChanged', handler)
 }
