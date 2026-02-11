@@ -7,10 +7,12 @@ import { AnalysisCard } from '../components/AnalysisCard'
 import { PriceChart } from '../components/PriceChart'
 import { TradeFeed } from '../components/TradeFeed'
 import { HolderChart } from '../components/HolderChart'
+import { TradePanel } from '../components/TradePanel'
+import { PositionCard } from '../components/PositionCard'
 
 export function TokenDetail() {
   const { id } = useParams<{ id: string }>()
-  const { curve, trades, positions, loading, error } = useCurveDetail(id ?? '')
+  const { curve, trades, positions, loading, error, refetch } = useCurveDetail(id ?? '')
   const { ethUsd } = useEthPrice()
 
   if (loading && !curve) {
@@ -39,7 +41,7 @@ export function TokenDetail() {
 
   const ethCollected = parseFloat(curve.ethCollected)
   const graduationProgress = Math.min(100, (ethCollected / 4.2) * 100)
-  const marketCapUsd = parseFloat(curve.lastPriceUsd) * 1_000_000_000 // rough estimate
+  const marketCapUsd = parseFloat(curve.lastPriceUsd) * 1_000_000_000
 
   return (
     <div>
@@ -125,8 +127,10 @@ export function TokenDetail() {
           <TradeFeed trades={trades} />
         </div>
 
-        {/* Right column: Analysis + Holders */}
+        {/* Right column: Trade + Position + Analysis + Holders */}
         <div className="space-y-6 lg:col-span-2">
+          <TradePanel curve={curve} onTradeSuccess={refetch} />
+          <PositionCard curve={curve} />
           <AnalysisCard curve={curve} trades={trades} positions={positions} />
           <HolderChart positions={positions} />
         </div>

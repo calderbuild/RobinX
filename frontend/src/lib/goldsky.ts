@@ -247,6 +247,26 @@ export async function fetchEthUsd(): Promise<number> {
   return parseFloat(bundle.ethUsd)
 }
 
+export async function fetchUserPosition(curveId: string, userAddress: string): Promise<Position | null> {
+  const id = `${userAddress.toLowerCase()}-${curveId}`
+  const { position } = await querySubgraph<{ position: Position | null }>(`
+    query UserPosition($id: ID!) {
+      position(id: $id) {
+        id
+        user { id }
+        curve { id }
+        totalEthSpent
+        totalEthReceived
+        totalTokensBought
+        totalTokensSold
+        buyCount
+        sellCount
+      }
+    }
+  `, { id })
+  return position
+}
+
 export async function fetchTopTraders(first = 50): Promise<(Position & { pnlEth: number })[]> {
   const { positions } = await querySubgraph<{ positions: Position[] }>(`
     query TopTraders($first: Int!) {
