@@ -1,10 +1,11 @@
+import { memo } from 'react'
 import { Link } from 'react-router-dom'
 import type { Curve } from '../lib/goldsky'
 import { formatUsd, formatEth, formatAge, truncateAddress } from '../lib/format'
 import { ScoreBadge } from './ScoreBadge'
 import { getAnalysisFromCache } from '../lib/demoAnalysis'
 
-export function TokenCard({ curve }: { curve: Curve }) {
+export const TokenCard = memo(function TokenCard({ curve }: { curve: Curve }) {
   const cached = getAnalysisFromCache(curve.id)
   const ethCollected = parseFloat(curve.ethCollected)
   const graduationProgress = Math.min(100, (ethCollected / 4.2) * 100)
@@ -76,4 +77,4 @@ export function TokenCard({ curve }: { curve: Curve }) {
       </div>
     </Link>
   )
-}
+})

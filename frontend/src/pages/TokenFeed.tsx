@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useCurves } from '../hooks/useCurves'
 import { useEthPrice } from '../hooks/useEthPrice'
+import { useDebounce } from '../hooks/useDebounce'
 import { TokenCard } from '../components/TokenCard'
 import type { CurveSortField } from '../lib/goldsky'
 
@@ -20,6 +21,7 @@ export function TokenFeed() {
 
   const { curves, loading, error } = useCurves(sortBy)
   const { ethUsd } = useEthPrice()
+  const debouncedSearch = useDebounce(search, 200)
 
   const filtered = useMemo(() => {
     let result = curves
@@ -27,22 +29,46 @@ export function TokenFeed() {
     if (filter === 'active') result = result.filter((c) => !c.graduated)
     if (filter === 'graduated') result = result.filter((c) => c.graduated)
 
-    if (search) {
-      const q = search.toLowerCase()
+    if (debouncedSearch) {
+      const q = debouncedSearch.toLowerCase()
       result = result.filter(
         (c) => c.name.toLowerCase().includes(q) || c.symbol.toLowerCase().includes(q),
       )
     }
 
     return result
-  }, [curves, filter, search])
+  }, [curves, filter, debouncedSearch])
 
   return (
     <div>
+      {/* Hero */}
+      <div className="mb-8 rounded-2xl border border-border bg-gradient-to-br from-bg-card to-bg-secondary p-6 sm:p-8">
+        <p className="text-xs font-medium uppercase tracking-widest text-blue">AI-Powered Analytics</p>
+        <h1 className="mt-2 font-display text-3xl font-bold leading-tight text-text-primary sm:text-4xl">
+          See through the noise.
+        </h1>
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-text-secondary">
+          RobinLens scores every RobinPump token across idea quality, on-chain health, and curve position -- so you can trade with signal, not hype.
+        </p>
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {[
+            { step: '01', title: 'Browse', desc: 'Live feed of all tokens on RobinPump with real-time data from Base.' },
+            { step: '02', title: 'Analyze', desc: 'AI evaluates the startup idea, holder behavior, and bonding curve math.' },
+            { step: '03', title: 'Decide', desc: 'Get a RobinScore (0-100), risk flags, and a one-line verdict.' },
+          ].map(({ step, title, desc }) => (
+            <div key={step} className="rounded-xl border border-border/50 bg-bg-primary/50 p-4">
+              <span className="font-mono text-xs text-blue">{step}</span>
+              <h3 className="mt-1 font-display text-sm font-semibold text-text-primary">{title}</h3>
+              <p className="mt-1 text-xs leading-relaxed text-text-muted">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold text-text-primary">Token Feed</h1>
+          <h2 className="font-display text-2xl font-bold text-text-primary">Token Feed</h2>
           <p className="mt-1 text-sm text-text-secondary">
             {curves.length} tokens on RobinPump
             {ethUsd > 0 && (

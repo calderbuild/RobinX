@@ -107,30 +107,30 @@ Endpoint: `https://api.goldsky.com/api/public/project_cmjjrebt3mxpt01rm9yi04vqq/
 
 **Tasks**:
 
-- [ ] Initialize Vite + React + TypeScript + Tailwind v4 project
+- [x] Initialize Vite + React + TypeScript + Tailwind v4 project
   - `frontend/` directory structure matching SafeReceipt pattern
   - Dark theme CSS variables in `index.css` via `@theme {}`
   - Fonts: Space Grotesk (display), Inter (body), Fira Code (mono)
   - Files: `vite.config.ts`, `tsconfig.app.json`, `postcss.config.cjs`, `index.css`
 
-- [ ] Create Goldsky subgraph client
+- [x] Create Goldsky subgraph client
   - File: `src/lib/goldsky.ts`
   - Generic `querySubgraph<T>(query, variables)` function
   - Rate limit handling (429 retry with backoff)
   - TypeScript types for all entities (Curve, Trade, User, Position, Pool)
 
-- [ ] Create data fetching hooks
+- [x] Create data fetching hooks
   - File: `src/hooks/useCurves.ts` -- fetch all curves sorted by volume/newest/market cap
   - File: `src/hooks/useCurveDetail.ts` -- fetch single curve with trades and positions
   - File: `src/hooks/useEthPrice.ts` -- ETH/USD from Bundle entity
   - Polling interval: 10s for lists, 5s for detail page
 
-- [ ] Create IPFS metadata fetcher
+- [x] Create IPFS metadata fetcher
   - File: `src/lib/metadata.ts`
   - Fetch and cache token metadata (name, description, image) from IPFS URIs
   - Use Pinata gateway: `olive-defensive-giraffe-83.mypinata.cloud`
 
-- [ ] Create chain config
+- [x] Create chain config
   - File: `src/lib/chains.ts`
   - Base Mainnet: Chain ID 8453, RPC, block explorer
 
@@ -145,19 +145,19 @@ Endpoint: `https://api.goldsky.com/api/public/project_cmjjrebt3mxpt01rm9yi04vqq/
 
 **Tasks**:
 
-- [ ] Define Zod schema for token analysis
+- [x] Define Zod schema for token analysis
   - File: `src/lib/analysisSchema.ts`
   - Fields: overall_score (0-100), idea_quality, onchain_health, curve_position, risk_flags[], one_line_verdict, comparable_projects[]
   - Each sub-score has: score (0-100) + reasoning (string)
 
-- [ ] Implement LLM analysis function
+- [x] Implement LLM analysis function
   - File: `src/lib/analyzer.ts`
   - System prompt: skeptical DeFi analyst, calibrated scoring (0-20 scam, 21-40 low quality, 41-60 average, 61-80 above average, 81-100 strong)
   - Input: IPFS description + on-chain metrics (holder count, top-10 concentration, bonding curve progress, buy/sell ratio, age)
   - Output: TokenAnalysis (Zod-validated)
   - Temperature: 0.3 for consistency
 
-- [ ] Implement on-chain metrics calculator
+- [x] Implement on-chain metrics calculator
   - File: `src/lib/metrics.ts`
   - Holder concentration: top-10 holders as % of total from Position data
   - Buy/sell ratio: from Trade data in rolling windows
@@ -165,7 +165,7 @@ Endpoint: `https://api.goldsky.com/api/public/project_cmjjrebt3mxpt01rm9yi04vqq/
   - Creator behavior: did creator sell? how much?
   - Bonding curve progress: from ethCollected relative to graduation threshold
 
-- [ ] Create demo fallback scenarios
+- [x] Create demo fallback scenarios
   - File: `src/lib/demoAnalysis.ts`
   - 3-4 hardcoded analysis results for demo when API keys unavailable
   - Pattern: same as SafeReceipt's `demoScenarios.ts`
@@ -188,7 +188,7 @@ Endpoint: `https://api.goldsky.com/api/public/project_cmjjrebt3mxpt01rm9yi04vqq/
 
 **Tasks**:
 
-- [ ] Token Feed page (`src/pages/TokenFeed.tsx`)
+- [x] Token Feed page (`src/pages/TokenFeed.tsx`)
   - Grid of token cards (3 columns desktop, 1 mobile)
   - Each card: logo, name, ticker, market cap, 24h change, RobinScore badge
   - Sort: by RobinScore / Market Cap / Newest / Volume
@@ -196,14 +196,14 @@ Endpoint: `https://api.goldsky.com/api/public/project_cmjjrebt3mxpt01rm9yi04vqq/
   - Search by name/symbol
   - Real-time "Live" indicator
 
-- [ ] Token Card component (`src/components/TokenCard.tsx`)
+- [x] Token Card component (`src/components/TokenCard.tsx`)
   - Compact display: logo, name ($TICKER), creator (truncated), age
   - Market cap + price change with green/red coloring
   - RobinScore as colored badge (green >60, yellow 40-60, red <40)
   - Bonding curve mini progress bar
   - Click navigates to detail page
 
-- [ ] Token Detail page (`src/pages/TokenDetail.tsx`)
+- [x] Token Detail page (`src/pages/TokenDetail.tsx`)
   - **Header**: Logo, name, ticker, contract address (copy), share button
   - **Stats bar**: Market Cap, ATH, Volume 24h, Bonding Curve Progress %
   - **Price Chart**: Candlestick using lightweight-charts, area chart toggle
@@ -212,7 +212,7 @@ Endpoint: `https://api.goldsky.com/api/public/project_cmjjrebt3mxpt01rm9yi04vqq/
   - **Trade Feed**: Scrolling table (side, amount ETH, amount token, trader, time, tx link)
   - **Creator Profile**: Address, other tokens created, behavior summary
 
-- [ ] Analysis Card component (`src/components/AnalysisCard.tsx`)
+- [x] Analysis Card component (`src/components/AnalysisCard.tsx`)
   - Overall score as large circular gauge (0-100)
   - Color: gradient from red (0) through yellow (50) to green (100)
   - Sub-scores in expandable accordion
@@ -221,25 +221,25 @@ Endpoint: `https://api.goldsky.com/api/public/project_cmjjrebt3mxpt01rm9yi04vqq/
   - "Analyze" button to trigger LLM (with loading spinner)
   - Cache analysis results in localStorage
 
-- [ ] Price Chart component (`src/components/PriceChart.tsx`)
+- [x] Price Chart component (`src/components/PriceChart.tsx`)
   - File: uses `lightweight-charts` library
   - Dark theme matching dashboard
   - Candlestick with green (#3fb68b) up / red (#ff5252) down
   - Volume histogram overlay
   - Time range selector: 1H / 4H / 1D / All
 
-- [ ] Trade Feed component (`src/components/TradeFeed.tsx`)
+- [x] Trade Feed component (`src/components/TradeFeed.tsx`)
   - Table with columns: Side (BUY/SELL), ETH Amount, Token Amount, Trader (truncated), Time (relative), Tx (link to BaseScan)
   - Color-coded rows: green for buys, red for sells
   - Highlight whale trades (> threshold)
   - Auto-scroll as new trades appear
 
-- [ ] Navbar (`src/components/Navbar.tsx`)
+- [x] Navbar (`src/components/Navbar.tsx`)
   - Logo + project name
   - Navigation: Feed / Leaderboard
   - Optional: Connect Wallet button (future)
 
-- [ ] Layout (`src/components/Layout.tsx`)
+- [x] Layout (`src/components/Layout.tsx`)
   - Dark background, max-width container
   - Responsive sidebar or top nav
 
@@ -260,23 +260,23 @@ Endpoint: `https://api.goldsky.com/api/public/project_cmjjrebt3mxpt01rm9yi04vqq/
 
 **Tasks**:
 
-- [ ] Error handling and loading states
+- [x] Error handling and loading states
   - Skeleton loaders for cards and charts
   - Error boundaries with retry buttons
   - Empty state for "no tokens found"
 
-- [ ] Performance optimization
+- [x] Performance optimization
   - React.memo for TokenCard list
   - Debounce search input
   - Cache subgraph responses (5s TTL)
   - Lazy load analysis (only trigger on user action or when visible)
 
-- [ ] Leaderboard page (`src/pages/Leaderboard.tsx`)
+- [x] Leaderboard page (`src/pages/Leaderboard.tsx`)
   - Top traders by realized PnL (from Position data: totalEthReceived - totalEthSpent)
   - Columns: rank, address, total PnL, trade count, win rate
   - Click to see trader's positions
 
-- [ ] Landing / About section
+- [x] Landing / About section
   - Brief hero explaining what RobinLens does
   - "Try it" CTA that scrolls to token feed
   - How it works: 3-step illustration
